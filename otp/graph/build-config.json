@@ -1,0 +1,11 @@
+{
+  "osm": [
+    { "source": "hungary-latest.osm.pbf" }
+  ],
+  "transitFeeds": [
+    { "type": "gtfs", "source": "gtfs/budapest_gtfs.zip", "feedId": "BUD" },
+    { "type": "gtfs", "source": "gtfs/volan_gtfs.zip", "feedId": "VOLAN" },
+    { "type": "gtfs", "source": "gtfs/mav_gtfs.zip", "feedId": "MAV" },
+    { "type": "gtfs", "source": "gtfs/szeged_gtfs.zip", "feedId": "SZEGED" }
+  ]
+}
