@@ -94,19 +94,26 @@ No Netbird needed — the emulator uses `10.0.2.2` to reach localhost on the hos
 
 The app uses [OpenTripPlanner 2.4](https://www.opentripplanner.org/) for transit + walking route planning. It runs locally in Docker.
 
-### Data files (already in repo)
+### Data files
 
-All source data lives in `otp/graph/`:
+The large data files are not committed to the repo (they exceed GitHub's 100 MB limit).
+Download them from the **[graph-data release](https://github.com/zeuxon/walkoo/releases/tag/graph-data)** and place them as follows:
+
+| Download | Destination |
+|----------|-------------|
+| `hungary-latest.osm.pbf` | `otp/graph/osm/hungary-latest.osm.pbf` |
+| `budapest_gtfs.zip` | `otp/graph/gtfs/budapest_gtfs.zip` |
+| `volan_gtfs.zip` | `otp/graph/gtfs/volan_gtfs.zip` |
+| `mav_gtfs.zip` | `otp/graph/gtfs/mav_gtfs.zip` |
+| `szeged_gtfs.zip` | `otp/graph/gtfs/szeged_gtfs.zip` |
+
+The following files are already in the repo and don't need to be downloaded:
 
 | File | Description |
 |------|-------------|
-| `hungary-latest.osm.pbf` | Hungary OSM road/pedestrian network |
-| `gtfs/budapest_gtfs.zip` | Budapest public transit (BKK) — feed ID `BUD` |
-| `gtfs/volan_gtfs.zip` | Volán intercity buses — feed ID `VOLAN` |
-| `gtfs/mav_gtfs.zip` | MÁV railways — feed ID `MAV` |
-| `gtfs/szeged_gtfs.zip` | Szeged local transit — feed ID `SZEGED` |
-| `graph.obj` | Pre-built routing graph (~500 MB) |
+| `graph.obj` | Pre-built routing graph (~500 MB) - also excluded, must be built (see below) |
 | `build-config.json` | Declares the data sources for OTP |
+| `otp-config.json` | OTP server configuration |
 
 ### (Re)Build the graph
 

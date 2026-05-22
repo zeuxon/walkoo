@@ -1,6 +1,6 @@
 {
   "osm": [
-    { "source": "hungary-latest.osm.pbf" }
+    { "source": "osm/hungary-latest.osm.pbf" }
   ],
   "transitFeeds": [
     { "type": "gtfs", "source": "gtfs/budapest_gtfs.zip", "feedId": "BUD" },

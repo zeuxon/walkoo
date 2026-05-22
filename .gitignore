@@ -42,11 +42,8 @@ yarn-error.*
 
 # OTP Graph (large files exceeding GitHub 100MB limit)
 otp/graph/graph.obj
-otp/graph/hungary-latest.osm.pbf
-otp/graph/hungary-gtfs.zip
-otp/graph/budapest-gtfs.zip
-otp/graph/gtfs/
 otp/graph/osm/
+otp/graph/gtfs/
 otp/*.jar
 
 # Hardhat / blockchain
