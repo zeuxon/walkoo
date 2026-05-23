@@ -220,7 +220,7 @@ const ShopScreen = () => {
                       disabled={!canAfford}
                     >
                       <Text style={styles.openBtnText}>
-                        {canAfford ? `${t.shop.openPack} · ${PACK_PRICES[pt]} ${t.common.pts}` : t.shop.notEnoughPts}
+                        {canAfford ? `${t.shop.openPack} | ${PACK_PRICES[pt]} ${t.common.pts}` : t.shop.notEnoughPts}
                       </Text>
                     </TouchableOpacity>
                   </View>

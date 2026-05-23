@@ -245,11 +245,11 @@ docker run --rm `
 ```bash
 ssh -p 443 -R0:localhost:8081 a.pinggy.io
 ```
-Copy the HTTPS URL it prints (e.g. `https://xxxx.a.pinggy.io`).
+Copy the HTTPS URL it prints.
 
 **4. Start Expo with the tunnel URL** (Terminal 2):
 ```bash
-set EXPO_PACKAGER_PROXY_URL=https://xxxx.a.pinggy.io
+set EXPO_PACKAGER_PROXY_URL=PINGGY_HTTPS_URL
 npx expo start
 ```
 

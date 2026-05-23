@@ -475,8 +475,8 @@ const MapScreen = () => {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Text style={[styles.stepMeta, isDone && styles.stepDone]}>
                   {(leg.distanceMeters / 1000).toFixed(1)} km
-                  {isTransit && departure ? ` · ${departure}` : ''}
-                  {isDone ? ' ·' : ''}
+                  {isTransit && departure ? ` | ${departure}` : ''}
+                  {isDone ? ' |' : ''}
                 </Text>
                 {isDone && <Check size={11} color={colors.textLight} />}
               </View>

@@ -215,7 +215,7 @@ const HomeScreen = () => {
             <View style={[styles.moodChip, { backgroundColor: moodColor + '22', borderColor: moodColor + '55' }]}>
               <View style={[styles.moodDot, { backgroundColor: moodColor }]} />
               <Text style={[styles.moodChipText, { color: moodColor }]}>
-                {((t.home.moods as Record<string, string>)[pet.mood] ?? pet.mood).toUpperCase()} · ×{PET_MOOD_MULTIPLIERS[pet.mood].toFixed(2)}
+                {((t.home.moods as Record<string, string>)[pet.mood] ?? pet.mood).toUpperCase()} | ×{PET_MOOD_MULTIPLIERS[pet.mood].toFixed(2)}
               </Text>
             </View>
           </View>
