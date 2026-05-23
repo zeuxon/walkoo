@@ -217,6 +217,55 @@ Path alias: `@/` maps to `src/` (configured in `babel.config.js` and `tsconfig.j
 
 ---
 
+## My personal dev workflow
+
+This is the exact startup sequence I use for development with a physical Android/iOS device over NetBird VPN.
+
+### What's needed
+
+- **[NetBird](https://netbird.io/)** - The PC and phone must both be connected to the same NetBird network so the phone can reach the OTP server on the PC without being on the same Wi-Fi.
+- **[Docker Desktop](https://www.docker.com/products/docker-desktop)** - for the OTP routing server.
+- **[Pinggy](https://pinggy.io/)** - SSH tunnel that exposes the Metro bundler (port 8081) to the phone over the internet. Needed because Expo Go on a physical device can't reach `localhost` on the PC directly.
+
+### Startup sequence
+
+**1. Start NetBird and Docker Desktop** on the PC.
+
+**2. Start the OTP routing server** (Terminal 3):
+```powershell
+docker run --rm `
+  -p 9000:8080 `
+  -v "${PWD}\otp\graph:/var/opentripplanner" `
+  -e JAVA_TOOL_OPTIONS="-Xmx6G" `
+  opentripplanner/opentripplanner:2.4.0 `
+  --load --serve --port 8080
+```
+
+**3. Open the Pinggy tunnel** (Terminal 1):
+```bash
+ssh -p 443 -R0:localhost:8081 a.pinggy.io
+```
+Copy the HTTPS URL it prints (e.g. `https://xxxx.a.pinggy.io`).
+
+**4. Start Expo with the tunnel URL** (Terminal 2):
+```bash
+set EXPO_PACKAGER_PROXY_URL=https://xxxx.a.pinggy.io
+npx expo start
+```
+
+**5. On the phone:**
+- Start NetBird and connect to the VPN network.
+- Open Expo Go and scan the QR code shown by `npx expo start`.
+
+**6. Set the OTP URL in the app** (first time only):
+
+Go to **Profile → Settings → OTP Server URL** and enter the NetBird IP of the PC. For me it's:
+```
+http://100.118.239.129:9000
+```
+
+---
+
 ## Troubleshooting
 
 ### Black map screen
