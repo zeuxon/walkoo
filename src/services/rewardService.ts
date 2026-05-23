@@ -35,8 +35,11 @@ export const awardRouteProgress = async (
   const deltaDistance = newProgressMeters - previousProgressMeters;
   if (deltaDistance <= 0) return 0;
 
-  const rawPoints = calculateProgressPoints(deltaDistance, mode);
-  if (rawPoints <= 0) return 0;
+  const newChunks = Math.floor(newProgressMeters / 100) - Math.floor(previousProgressMeters / 100);
+  if (newChunks <= 0) return 0;
+
+  const rate = mode === 'walk' ? POINTS_PER_100M_WALK : POINTS_PER_100M_TRANSIT;
+  const rawPoints = newChunks * rate;
 
   const [skinMult, moodMult] = await Promise.all([getActiveSkinMultiplier(), getPetMoodMultiplier()]);
   const totalMult = skinMult * moodMult;
@@ -64,7 +67,7 @@ export const awardRouteProgress = async (
 
   await addPoints(points);
   await addPetXP(PET_XP_PER_TRIP);
-  await addPetEnergy(Math.floor(deltaDistance / 100) * PET_ENERGY_PER_100M);
+  await addPetEnergy(newChunks * PET_ENERGY_PER_100M);
 
   return points;
 }
