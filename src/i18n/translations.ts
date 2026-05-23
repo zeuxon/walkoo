@@ -288,7 +288,7 @@ const en: Translations = {
   },
   home: {
     greeting: 'Good day!',
-    totalPoints: 'total points',
+    totalPoints: 'points',
     dayStreak: 'day streak',
     dailyGoal: 'Daily Goal',
     goalReached: 'Goal reached! Keep going 🎉',
@@ -601,7 +601,7 @@ const hu: Translations = {
   },
   home: {
     greeting: 'Jó napot!',
-    totalPoints: 'összes pont',
+    totalPoints: 'pont',
     dayStreak: 'napos sorozat',
     dailyGoal: 'Napi Cél',
     goalReached: 'Cél elérve! Hajrá! 🎉',

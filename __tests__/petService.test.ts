@@ -49,7 +49,6 @@ describe('petService', () => {
 
     it('unlocks all perks up to current level', () => {
       const perks = getUnlockedPerks(5);
-      // Levels 2, 3, 5 have perks
       expect(perks.length).toBe(3);
     });
 

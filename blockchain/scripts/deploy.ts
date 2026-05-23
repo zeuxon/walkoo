@@ -12,7 +12,6 @@ async function main() {
   console.log("Sending deploy transaction...");
   const contract = await WalkooLedger.deploy();
 
-  // Print the tx hash immediately so we can track it
   const tx = contract.deploymentTransaction();
   if (tx) {
     console.log("Transaction hash:", tx.hash);

@@ -4,7 +4,6 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const address = signer.address;
 
-  // Get the current confirmed nonce vs pending nonce
   const confirmedNonce = await ethers.provider.getTransactionCount(address, "latest");
   const pendingNonce = await ethers.provider.getTransactionCount(address, "pending");
 
@@ -19,7 +18,6 @@ async function main() {
 
   console.log(`Cancelling ${pendingNonce - confirmedNonce} pending transaction(s)...`);
 
-  // Send self-transfers with higher gas to replace each pending tx
   for (let nonce = confirmedNonce; nonce < pendingNonce; nonce++) {
     console.log(`Cancelling nonce ${nonce}...`);
     const tx = await signer.sendTransaction({
@@ -27,7 +25,7 @@ async function main() {
       value: 0,
       nonce: nonce,
       gasLimit: 21000,
-      gasPrice: 30_000_000_000, // 30 gwei to outbid the stuck tx
+      gasPrice: 100_000_000_000,
     });
     await tx.wait();
     console.log(`  Nonce ${nonce} cancelled, tx: ${tx.hash}`);
