@@ -1,4 +1,8 @@
-# Walkoo - Development Guide
+# Walkoo
+
+A gamified, blockchain-authenticated sustainable urban mobility app built with Expo / React Native.
+
+---
 
 ## Stack
 
@@ -7,8 +11,7 @@
 | Framework | Expo | ~54.0.0 |
 | Runtime | React Native | 0.81.5 |
 | Language | TypeScript | ~5.9.2 |
-| UI library | React | 19.1.0 |
-| Navigation | React Navigation (bottom-tabs + native-stack) | 7.x |
+| Navigation | React Navigation | 7.x |
 | Maps | react-native-maps (Google Maps) | 1.20.1 |
 | Storage | AsyncStorage | 2.2.0 |
 | Blockchain | ethers + viem + permissionless (ERC-4337) | - |
@@ -19,104 +22,95 @@
 
 ## Prerequisites
 
-Install these before doing anything else.
+Install all of these before starting.
 
-| Tool | Version | Where to get it |
-|------|---------|----------------|
+| Tool | Version | Download |
+|------|---------|----------|
 | Node.js | 18+ | https://nodejs.org |
-| JDK | **17** | https://adoptium.net |
-| Android Studio | latest | https://developer.android.com/studio (includes SDK) |
+| JDK | **exactly 17** | https://adoptium.net |
+| Android Studio | latest | https://developer.android.com/studio |
 | Docker Desktop | latest | https://www.docker.com/products/docker-desktop |
-| Netbird | latest | https://netbird.io/download |
 
-> **JDK must be exactly 17.** The path must be set explicitly in `android/gradle.properties`:
+> **JDK 17 is required.** After installing, open `android/gradle.properties` and set:
 > ```
 > org.gradle.java.home=C\:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot
 > ```
-> Update this path if your JDK is installed elsewhere.
+> Update the path to match where your JDK is installed.
 
 ---
 
-## Installation
+## Setup
 
+**1. Install dependencies**
 ```bash
 npm install
 ```
 
-The `android/` folder is not commited and must be generated locally.
-Run prebuild before building for the first time, or whenever native dependencies change:
+**2. Generate the Android native project**
 
+The `android/` folder is not committed. Run this once, and again whenever native dependencies change:
 ```bash
 npx expo prebuild --clean
 ```
 
 ---
 
-## Running on Android and iOS
+## Running the app
 
-### Physical device
+### Option A - Standalone APK (easiest, just install and run)
 
-Make sure you have **Expo Go** downloaded on your device.
-
-1. Start Netbird on **both** PC and phone
-2. Connect the phone Netbird to the OTP server running network (or via USB)
-3. Run:
-
-```bash
-# Terminal 1:
-ssh -p 443 -R0:localhost:8081 a.pinggy.io
-
-# Terminal 2:
-set EXPO_PACKAGER_PROXY_URL=<WRITE_PIGGY_LINK_HERE>
-npx expo start
-```
-
-4. 
-- **Android**: Open Expo Go and scan the QR code shown in the terminal
-- **iOS**: Simply scan the QR code with your camera
-
-> `100.118.239.129` is the PC's Netbird IP.
-
-### Emulator
+The recommended way to run the app on an Android device. Builds a fully self-contained APK. No PC, no Metro server, no Expo Go needed after installation. Just install it like any regular app.
 
 ```powershell
-# Start an AVD from Android Studio first, then:
-npx expo start --android
-# or: npm run android
+cd android
+.\gradlew assembleRelease
 ```
 
-No Netbird needed — the emulator uses `10.0.2.2` to reach localhost on the host machine.
+APK output: `android\app\build\outputs\apk\release\app-release-unsigned.apk`
 
+Transfer the APK to your Android device and install it. Everything works out of the box including Google Maps.
+
+### Option B - Android emulator
+
+Start an AVD from Android Studio first, then:
+```bash
+npx expo start --android
+```
+
+### Option C - Expo Go (for development and iOS testing only)
+
+Use this option if you want to see live code changes during development, or if you want to test on an iOS device.
+
+1. Install **Expo Go** on your phone
+2. Run:
+```bash
+npx expo start
+```
+3. Scan the QR code with Expo Go
+
+> Note: Expo Go is intended for development only. For the full app experience use Option A (standalone APK).
 
 ---
 
 ## OTP Routing Server
 
-The app uses [OpenTripPlanner 2.4](https://www.opentripplanner.org/) for transit + walking route planning. It runs locally in Docker.
+The app uses [OpenTripPlanner 2.4](https://www.opentripplanner.org/) to plan walking + transit routes. It runs locally in Docker. The app works without it but route planning will not function.
 
-### Data files
+### Step 1 - Download data files
 
-The large data files are not committed to the repo (they exceed GitHub's 100 MB limit).
-Download them from the **[graph-data release](https://github.com/zeuxon/walkoo/releases/tag/graph-data)** and place them as follows:
+The large data files are not committed. Download them from the **[graph-data release](https://github.com/zeuxon/walkoo/releases/tag/graph-data)** and place them here:
 
-| Download | Destination |
-|----------|-------------|
+| File | Destination |
+|------|-------------|
 | `hungary-latest.osm.pbf` | `otp/graph/osm/hungary-latest.osm.pbf` |
 | `budapest_gtfs.zip` | `otp/graph/gtfs/budapest_gtfs.zip` |
 | `volan_gtfs.zip` | `otp/graph/gtfs/volan_gtfs.zip` |
 | `mav_gtfs.zip` | `otp/graph/gtfs/mav_gtfs.zip` |
 | `szeged_gtfs.zip` | `otp/graph/gtfs/szeged_gtfs.zip` |
 
-The following files are already in the repo and don't need to be downloaded:
+### Step 2 - Build the routing graph
 
-| File | Description |
-|------|-------------|
-| `graph.obj` | Pre-built routing graph (~500 MB) - also excluded, must be built (see below) |
-| `build-config.json` | Declares the data sources for OTP |
-| `otp-config.json` | OTP server configuration |
-
-### (Re)Build the graph
-
+This takes 10–20 minutes and requires at least 10 GB of RAM allocated to Docker:
 ```powershell
 docker run --rm `
   -v "${PWD}\otp\graph:/var/opentripplanner" `
@@ -125,11 +119,7 @@ docker run --rm `
   --build --save
 ```
 
-If there is already a built graph this replaces it.
-
-### Start the server
-
-Run this from the project root in PowerShell:
+### Step 3 - Start the server
 
 ```powershell
 docker run --rm `
@@ -140,43 +130,37 @@ docker run --rm `
   --load --serve --port 8080
 ```
 
-### Set OTP URL in the app
-
-This should be set already but if not:
+### Step 4 - Set the OTP URL in the app
 
 Go to **Profile → Settings → OTP Server URL** and enter:
 
 | Scenario | URL |
 |----------|-----|
 | Android emulator | `http://10.0.2.2:9000` |
-| Physical device (Netbird) | `http://100.118.239.129:9000` |
+| Physical device (same network) | `http://<your-pc-local-ip>:9000` |
 
 ---
 
 ## Blockchain
 
-### Deploying a new contract
+The app records trips, badges, and challenges on the **Polygon Amoy testnet** via the `WalkooLedger` smart contract. This works automatically and is completely gasless (ERC-4337 + Pimlico paymaster). No setup needed to use it.
 
-Only needed if you change `WalkooLedger.sol`.
+### Re-deploying the contract
 
+Only needed if you modify `blockchain/contracts/WalkooLedger.sol`:
 ```powershell
 cd blockchain
 npm install
-$env:DEPLOYER_PRIVATE_KEY = "0x..."   # funded Amoy wallet private key
+$env:DEPLOYER_PRIVATE_KEY = "0x..."
 npm run deploy:amoy
 ```
+Then update `CONTRACT_ADDRESS` in `src/blockchain/config.ts`.
 
-Update `CONTRACT_ADDRESS` in `src/blockchain/config.ts` with the new address.
-
-### Verifying on-chain activity
-
-Open the contract on PolygonScan and watch the Events tab:
+### View on-chain activity
 
 ```
 https://amoy.polygonscan.com/address/0x572d1c12595444C0066Aed33866cedcF79c01dE4#events
 ```
-
-To get test POL for the deployer wallet: https://faucet.polygon.technology
 
 ---
 
@@ -186,28 +170,26 @@ To get test POL for the deployer wallet: https://faucet.polygon.technology
 npm test
 ```
 
-12 test suites, 168 tests. All should pass. Clear the cache if you see a stale error:
-
+All test suites should pass. If you see stale cache errors:
 ```bash
 npx jest --clearCache
 ```
 
 ---
 
-## Developer Mode (in-app)
+## Developer Mode
 
-Several debug features are hidden behind a developer mode gate:
+Hidden debug features are available via a tap sequence:
 
-1. On the **Profile** screen, tap the **Settings** heading 7 times quickly
+1. On the **Profile** screen, tap the **Settings** heading **7 times quickly**
 2. Enter passphrase: `walkoo2026`
-3. Developer mode is now enabled
 
-With developer mode on:
-- **DEV: Finish** button appears on the Map screen: instantly completes the active trip
-- **Blockchain Wallet** section appears in Profile with the smart account address and on-chain stats
-- **Wallet Dev Tools** appear for exporting/importing the private key
-- **Reset All Progress** button appears to wipe all local data
-- **Replay Tutorial** button re-triggers the onboarding flow
+With developer mode enabled:
+- **DEV: Finish** button on Map screen: instantly completes the active trip
+- **Blockchain Wallet** section in Profile: shows smart account address and on-chain stats
+- **Wallet Dev Tools**: export/import the private key
+- **Reset All Progress**: wipes all local data
+- **Replay Tutorial**: re-triggers onboarding
 
 ---
 
@@ -216,16 +198,16 @@ With developer mode on:
 ```
 src/
   screens/        # One file per tab (HomeScreen, MapScreen, etc.)
-  services/       # Business logic + AsyncStorage persistence
+  services/       # Business logic and AsyncStorage persistence
   blockchain/     # Smart contract integration (ethers / viem / permissionless)
-  i18n/           # English + Hungarian translations
+  i18n/           # English and Hungarian translations
   types/          # Shared TypeScript interfaces
-  theme/          # Colors, spaces, ThemeContext
-  assets/         # Images, fonts
+  theme/          # Colors, spacing, ThemeContext
+  assets/         # Images
   utils/          # Analytics helpers, location math
 
-otp/graph/        # OTP data files + pre-built graph
-blockchain/       # Hardhat project (contract source, deploy scripts, tests)
+otp/graph/        # OTP config files (data files downloaded separately)
+blockchain/       # Hardhat project (contract source, deploy scripts)
 __tests__/        # Jest test suites
 ```
 
@@ -236,22 +218,32 @@ Path alias: `@/` maps to `src/` (configured in `babel.config.js` and `tsconfig.j
 ## Troubleshooting
 
 ### Black map screen
-The Google Maps API key only works in native builds. Run with `npx expo run:android` instead of Expo Go.
+The Google Maps API key only works in native builds. Use Option A (APK) or `npx expo run:android` instead of Expo Go.
 
-### Gradle build fails (JDK error / CMake error)
-JDK must be 17. Check `android/gradle.properties`:
+### Gradle build fails with JDK error
+JDK must be 17. Set the path in `android/gradle.properties`:
 ```
 org.gradle.java.home=C\:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot
 ```
-Update the path if your JDK is installed elsewhere.
+### Can't reach or start app with `npx expo start`
+
+Try:
+
+```bash
+# Terminal 1:
+ssh -p 443 -R0:localhost:8081 a.pinggy.io
+
+# Terminal 2:
+set EXPO_PACKAGER_PROXY_URL=<WRITE_PIGGY_LINK_HERE>
+npx expo start
+```
 
 ### Metro port 8081 already in use
 ```bash
 npx kill-port 8081
 ```
 
-### OTP server not reachable from phone
-1. Confirm Docker container is running and shows `Grizzly server started`
-2. Confirm Netbird is active on both PC and phone
-3. Test in the phone browser: `http://100.118.239.129:9000`
-4. Check the OTP URL setting in Profile
+### OTP server not reachable
+1. Confirm Docker container is running and logs show `Grizzly server started`
+2. Test in your phone browser: `http://<your-pc-ip>:9000`
+3. Check the OTP URL in Profile settings
