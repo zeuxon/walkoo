@@ -1,6 +1,8 @@
 # Walkoo
 
-A gamified, blockchain-authenticated sustainable urban mobility app built with Expo / React Native.
+A gamified, blockchain-based sustainable urban mobility app built with Expo / React Native.
+
+### APK: https://github.com/zeuxon/walkoo/releases/tag/APK
 
 ---
 
